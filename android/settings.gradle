@@ -1,0 +1,3 @@
+rootProject.name = 'JNMaps'
+
+include ':app'
