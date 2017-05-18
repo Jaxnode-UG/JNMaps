@@ -30,9 +30,9 @@ export default class JNMaps extends Component {
       }
     };
   }
-  // onRegionChange(region) {
-  //   this.setState(Object.assign({}, this.state, { region: region }));
-  // }
+  onRegionChange(region) {
+    this.setState(Object.assign({}, this.state, { region: region }));
+  }
   componentWillMount() {
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(pos => {
@@ -43,19 +43,38 @@ export default class JNMaps extends Component {
                 longitudeDelta: 0.0421
             };
             this.setState(Object.assign({}, this.state, { region: newRegion }));
+            fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${pos.coords.latitude},${pos.coords.longitude}`)
+              .then(res => res.json())
+              .then(json => {
+                if (json.results.length > 0) {
+                  this.setState(Object.assign({}, this.state, { marker: { title: 'Your are here', description: json.results[0].formatted_address }}));  
+                }
+              })
+              .catch(err => alert(err));
             if (this.map !== null && this.map !== undefined) {
                 this.map.animateToRegion(newRegion);
             }
         });
-    } 
+    }
+    
+  }
+  onRegionChangeComplete(region) {
+    fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${region.latitude},${region.longitude}`)
+      .then(res => res.json())
+      .then(json => {
+        if (json.results.length > 0) {
+          this.setState(Object.assign({}, this.state, { marker: { title: 'Your are here', description: json.results[0].formatted_address }}));  
+        }
+      })
+      .catch(err => alert(err));
   }
   render() {
-    // onRegionChange={(r) => this.onRegionChange(r)} 
+    // onRegionChange={(r) => this.onRegionChange(r)}
+    // onRegionChangeComplete={(r) => this.onRegionChangeComplete(r)} 
     return (
         <MapView style={styles.map} 
           ref={ref => { this.map = ref; }} 
-          initialRegion={this.state.region}
-          >
+          initialRegion={this.state.region} >
           <MapView.Marker.Animated
               coordinate={this.state.region}
               title={this.state.marker.title}
