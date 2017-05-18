@@ -1,7 +1,8 @@
 /**
- * Sample React Native App
+ * Sample React Native Maps App
  * https://github.com/facebook/react-native
  * @flow
+ * For React Native Jax and JaxNode user groups May 17th 2017
  */
 
 import React, { Component } from 'react';
@@ -29,6 +30,9 @@ export default class JNMaps extends Component {
       }
     };
   }
+  // onRegionChange(region) {
+  //   this.setState(Object.assign({}, this.state, { region: region }));
+  // }
   componentWillMount() {
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(pos => {
@@ -38,8 +42,7 @@ export default class JNMaps extends Component {
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421
             };
-            console.log(`Lat: ${pos.coords.latitude} & Long: ${pos.coords.longitude}`);
-            this.setState(Object.assign({}, { region: newRegion }));
+            this.setState(Object.assign({}, this.state, { region: newRegion }));
             if (this.map !== null && this.map !== undefined) {
                 this.map.animateToRegion(newRegion);
             }
@@ -47,11 +50,12 @@ export default class JNMaps extends Component {
     } 
   }
   render() {
+    // onRegionChange={(r) => this.onRegionChange(r)} 
     return (
         <MapView style={styles.map} 
           ref={ref => { this.map = ref; }} 
           initialRegion={this.state.region}
-          onRegionChange={this.onRegionChange} >
+          >
           <MapView.Marker.Animated
               coordinate={this.state.region}
               title={this.state.marker.title}
